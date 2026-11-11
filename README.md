@@ -10,6 +10,12 @@ the tools to build and flash it.
 
 ## Status: working, verified on real hardware
 
+> **Verified 2026-11-11** on an RGB10 Max 2: image flashed with our flasher
+> (SHA-256 read-back OK), boots through the setup wizard, **Wi-Fi + Bluetooth
+> work from battery**, both analog sticks click (**L3/R3**) and the **L3+R3
+> mouse-mode chord** works. See the "Build notes" section for the two issues
+> that had to be fixed to get here.
+
 | Feature | State |
 |---|---|
 | Display / orientation (`kd50t048a`, `ORIENTATION_270`) | ✅ works |
@@ -105,6 +111,22 @@ It never mounts or modifies `/data`. Therefore the produced image contains:
 Tailscale is optional and installed by the user after first boot; its login state
 stays on that console's `/data`. `scripts/migrate-console-state.sh` only runs when
 you explicitly invoke it with your own state kit, and no state kit is published here.
+
+## Build notes (hard-won)
+
+Two things are essential and easy to get wrong when rebuilding the image:
+
+1. **`dtc -@`** — the boot applies device-tree overlays, so the DTB must contain
+   `__symbols__`. A DTB compiled without it gets as far as a *system failure*
+   message at first boot. `dts/build-dtb.sh` uses `-@`; the committed DTB has it.
+2. **`boot.ini`** — the port needs `usbcore.autosuspend=-1` in `bootrootfs`,
+   `androidboot.sf_orientation=ORIENTATION_270` on the `android` variable, and the
+   pre-kernel PMIC OTG rail poke (`i2c mw 0x20 0xb4 0x47 1`) before the booti in
+   **both** branches. This is what powers the USB hub (and therefore Wi-Fi) and
+   sets the panel rotation from the very first boot.
+
+The BOOT rebuild copies the **whole** base BOOT tree (not a whitelist), so
+`Image/`, battery bitmaps and the rest survive.
 
 ## License and credits
 
