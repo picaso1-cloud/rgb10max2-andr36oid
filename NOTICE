@@ -1,0 +1,28 @@
+RGB10 Max 2 — unofficial andr36oid port
+========================================
+
+This project is an independent, community-made port of andr36oid to the
+Powkiddy RGB10 Max 2. It is not produced, endorsed or supported by the
+andr36oid project, Powkiddy, Rockchip, Google or LineageOS.
+
+Trademarks and names remain the property of their respective owners and are
+used only to describe compatibility.
+
+Nothing in this repository contains or distributes:
+
+  - ROMs, BIOS/firmware images for games or consoles
+  - proprietary vendor blobs extracted from commercial firmware
+  - the official andr36oid SD flasher (GPL-3.0) or its source code
+
+The image produced by scripts/build-rgb10max2-image.sh is derived from an
+andr36oid base image that you download yourself and from the port files in
+this repository. You are responsible for complying with the licenses of the
+base image and of any files you add to it.
+
+Device tree sources under dts/ are derived from Rockchip and mainline Linux
+sources (GPL-2.0); their SPDX identifiers are preserved.
+
+Everything else in this repository is licensed under GPL-3.0; see LICENSE.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. Flashing
+erases the target card. Keep backups.

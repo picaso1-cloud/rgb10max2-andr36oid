@@ -1,0 +1,6 @@
+flasher/dist/
+flasher/flasher
+*.img
+*.img.xz
+*.img.sha256
+build/

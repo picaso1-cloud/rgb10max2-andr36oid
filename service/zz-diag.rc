@@ -1,0 +1,9 @@
+# RGB10 Max 2 diagnostics v11: wifi bring-up + timed watch + wireless ADB
+on property:sys.boot_completed=1
+    start andr36oid-diag
+
+service andr36oid-diag /system/bin/sh /vendor/etc/diag.sh
+    user root
+    group root
+    disabled
+    oneshot

@@ -1,0 +1,78 @@
+/*
+ * RGB10 Max 2 key remap overlay for ROCKNIX RK3326 (ODROID-GO Super DTB)
+ *
+ * The Max 2 identifies as an OGS-class board (hwrev v10-go3, ADC 85), so
+ * ROCKNIX boots it with rk3326-odroid-go3.dtb. The electrical pins already
+ * match the Max 2, but several key codes are wired for the OGS layout:
+ *
+ *   node  pin              OGS code (in DTB)     Max 2 meaning
+ *   sw5   gpio1 PA2        BTN_EAST  (305)       A  -> BTN_SOUTH (304)
+ *   sw6   gpio1 PA5        BTN_SOUTH (304)       B  -> BTN_EAST  (305)
+ *   sw11  gpio2 PA2        HAPPY3    (706)       START (315)
+ *   sw12  gpio2 PA3        BTN_THUMBL(317)       SELECT (314)
+ *   sw13  gpio2 PA4        BTN_THUMBR(318)       L3 -> BTN_THUMBL (317)
+ *   sw14  gpio2 PA5        HAPPY5    (709)       R3 -> BTN_THUMBR (318)
+ *   sw15  gpio2 PA6        BTN_TL    (310)       L2 -> BTN_TL2   (312)
+ *   sw16  gpio2 PA7        BTN_TR    (311)       R2 -> BTN_TR2   (313)
+ *   sw19  gpio3 PB1        BTN_SELECT(314)       F1 -> HAPPY1    (704)
+ *   sw20  gpio3 PB7        BTN_TR2   (313)       R1 -> BTN_TR    (311)
+ *   sw21  gpio3 PB2        BTN_TL2   (312)       L1 -> BTN_TL    (310)
+ *   sw22  gpio3 PB4        BTN_START (315)       F2 -> HAPPY2    (705)
+ *
+ * D-pad and volume keys are already correct in the OGS DTB.
+ * Apply with U-Boot FDTOVERLAYS (extlinux.conf) or fdtoverlay for testing.
+ */
+
+/dts-v1/;
+/plugin/;
+
+/ {
+	fragment@0 {
+		target-path = "/odroidgo3-joypad/sw5";
+		__overlay__ { linux,code = <0x130>; }; /* A = BTN_SOUTH */
+	};
+	fragment@1 {
+		target-path = "/odroidgo3-joypad/sw6";
+		__overlay__ { linux,code = <0x131>; }; /* B = BTN_EAST */
+	};
+	fragment@2 {
+		target-path = "/odroidgo3-joypad/sw11";
+		__overlay__ { linux,code = <0x13b>; }; /* Start = BTN_START */
+	};
+	fragment@3 {
+		target-path = "/odroidgo3-joypad/sw12";
+		__overlay__ { linux,code = <0x13a>; }; /* Select = BTN_SELECT */
+	};
+	fragment@4 {
+		target-path = "/odroidgo3-joypad/sw13";
+		__overlay__ { linux,code = <0x13d>; }; /* L3 = BTN_THUMBL */
+	};
+	fragment@5 {
+		target-path = "/odroidgo3-joypad/sw14";
+		__overlay__ { linux,code = <0x13e>; }; /* R3 = BTN_THUMBR */
+	};
+	fragment@6 {
+		target-path = "/odroidgo3-joypad/sw15";
+		__overlay__ { linux,code = <0x138>; }; /* L2 = BTN_TL2 */
+	};
+	fragment@7 {
+		target-path = "/odroidgo3-joypad/sw16";
+		__overlay__ { linux,code = <0x139>; }; /* R2 = BTN_TR2 */
+	};
+	fragment@8 {
+		target-path = "/odroidgo3-joypad/sw19";
+		__overlay__ { linux,code = <0x2c0>; }; /* F1 = BTN_TRIGGER_HAPPY1 */
+	};
+	fragment@9 {
+		target-path = "/odroidgo3-joypad/sw20";
+		__overlay__ { linux,code = <0x137>; }; /* R1 = BTN_TR */
+	};
+	fragment@10 {
+		target-path = "/odroidgo3-joypad/sw21";
+		__overlay__ { linux,code = <0x136>; }; /* L1 = BTN_TL */
+	};
+	fragment@11 {
+		target-path = "/odroidgo3-joypad/sw22";
+		__overlay__ { linux,code = <0x2c1>; }; /* F2 = BTN_TRIGGER_HAPPY2 */
+	};
+};
