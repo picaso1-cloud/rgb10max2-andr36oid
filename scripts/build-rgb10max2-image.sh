@@ -96,7 +96,7 @@ fi
 mkdir -p "$WORK/boot-orig"
 MIDX="$IMG@@$OFF1"
 # 1. pull the entire official BOOT content out (mtools = no kernel involvement)
-mcopy -s -i "$MIDX" ::/ "$WORK/boot-orig"/ || die "mtools read of official BOOT failed"
+mcopy -o -s -i "$MIDX" ::/ "$WORK/boot-orig"/ || die "mtools read of official BOOT failed"
 [ -f "$WORK/boot-orig/boot.ini" ] || die "official BOOT extraction incomplete"
 
 # 2. apply our changes on the local copy
@@ -119,12 +119,12 @@ grep -q "ORIENTATION_270" "$WORK/boot-orig/boot.ini" || die "boot.ini orientatio
 rm -f "$WORK/boot-vfat.img"
 mkfs.vfat -n BOOT -C "$WORK/boot-vfat.img" 262144   # 256 MiB in 1KB blocks
 for D in Devices Experimental Image Panels Backup-stock; do mmd -i "$WORK/boot-vfat.img" "::$D"; done
-mcopy -s -i "$WORK/boot-vfat.img" "$WORK/boot-orig/Devices/"* ::/Devices/
-for D in Experimental Panels Backup-stock; do mcopy -s -i "$WORK/boot-vfat.img" "$WORK/boot-orig/$D/"* "::/$D/"; done
-if ls "$WORK/boot-orig/Image/"* >/dev/null 2>&1; then mcopy -s -i "$WORK/boot-vfat.img" "$WORK/boot-orig/Image/"* ::/Image/; fi
-mcopy -i "$WORK/boot-vfat.img" "$WORK/boot-orig/"*.txt ::/
-for f in $TOP_FILES boot.ini boot.ini-android logo.bmp logo_kernel.bmp make-report.txt; do
-  [ -f "$WORK/boot-orig/$f" ] && mcopy -i "$WORK/boot-vfat.img" "$WORK/boot-orig/$f" ::/
+mcopy -o -s -i "$WORK/boot-vfat.img" "$WORK/boot-orig/Devices/"* ::/Devices/
+for D in Experimental Panels Backup-stock; do mcopy -o -s -i "$WORK/boot-vfat.img" "$WORK/boot-orig/$D/"* "::/$D/"; done
+if ls "$WORK/boot-orig/Image/"* >/dev/null 2>&1; then mcopy -o -s -i "$WORK/boot-vfat.img" "$WORK/boot-orig/Image/"* ::/Image/; fi
+mcopy -o -i "$WORK/boot-vfat.img" "$WORK/boot-orig/"*.txt ::/
+for f in $TOP_FILES boot.ini boot.ini-android logo_kernel.bmp make-report.txt; do
+  [ -f "$WORK/boot-orig/$f" ] && mcopy -o -i "$WORK/boot-vfat.img" "$WORK/boot-orig/$f" ::/
 done
 mdir -i "$WORK/boot-vfat.img" ::/ >/dev/null || die "fresh vfat verification failed"
 
