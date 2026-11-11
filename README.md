@@ -28,6 +28,10 @@ the tools to build and flash it.
 | ADB over Wi-Fi | ✅ works |
 | Root command daemon (live servicing) | ✅ works |
 
+**Tested card:** the release was built, flashed and booted on a **7.5 GiB
+“NCard”** (full read 52.9 MB/s, fsck clean; backup image kept locally). The
+128 GB “SD16G” card belongs to the RG405V and was not used here.
+
 Known quirks are documented under [`docs/`](docs/), above all
 [`docs/02-power-and-charging.md`](docs/02-power-and-charging.md): the two USB-C
 ports share one 5 V net, and the Wi-Fi hub is powered from the rk817 OTG latch.
