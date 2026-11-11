@@ -32,6 +32,10 @@ Known quirks are documented under [`docs/`](docs/), above all
 [`docs/02-power-and-charging.md`](docs/02-power-and-charging.md): the two USB-C
 ports share one 5 V net, and the Wi-Fi hub is powered from the rk817 OTG latch.
 
+## Download
+
+Prebuilt image + flasher binaries: **https://github.com/picaso1-cloud/rgb10max2-andr36oid/releases**
+
 ## Quick start
 
 1. **Build the image** from an official andr36oid RK3326 image:
