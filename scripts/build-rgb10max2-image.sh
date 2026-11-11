@@ -126,7 +126,7 @@ if ! grep -q "androidboot.sf_orientation=ORIENTATION_270" "$BLE"; then
 fi
 # 3) pre-kernel PMIC OTG rail poke before the first booti
 if ! grep -q "i2c mw 0x20 0xb4 0x47 1" "$BLE"; then
-  awk 'BEGIN{done=0} /^    booti / && !done {print "        i2c dev 0"; print "        i2c mw 0x20 0xb4 0x47 1"; done=1} {print}' "$BLE" > "$BLE.tmp"
+  awk '/^    booti / {print "        i2c dev 0"; print "        i2c mw 0x20 0xb4 0x47 1"} {print}' "$BLE" > "$BLE.tmp"
   mv "$BLE.tmp" "$BLE"
 fi
 grep -q "ORIENTATION_270" "$BLE" || die "boot.ini orientation edit failed"
