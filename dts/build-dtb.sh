@@ -33,7 +33,7 @@ cpp -nostdinc -I"$WORK" -I"$WORK/include" -I"$WORK/include/uapi" \
     -o "$WORK/rgb10max2.pre.dts" "$HERE/rk3326-rgb10max2-android.dts"
 
 echo "compiling ..."
-dtc -I dts -O dtb -o "$WORK/rgb10max2.dtb" "$WORK/rgb10max2.pre.dts" 2>/dev/null
+dtc -@ -I dts -O dtb -o "$WORK/rgb10max2.dtb" "$WORK/rgb10max2.pre.dts" 2>/dev/null
 
 cp "$WORK/rgb10max2.dtb" "$OUT"
 echo "installed $OUT"

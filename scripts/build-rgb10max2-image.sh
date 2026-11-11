@@ -118,17 +118,10 @@ grep -q "sf_orientation=ORIENTATION_270" "$WORK/boot-orig/boot.ini" || \
   sed -i 's/setenv bootargs /setenv bootargs androidboot.sf_orientation=ORIENTATION_270 usbcore.autosuspend=-1 /' "$WORK/boot-orig/boot.ini"
 grep -q "ORIENTATION_270" "$WORK/boot-orig/boot.ini" || die "boot.ini orientation edit failed"
 
-# 3. fresh vfat, everything copied back in with mtools (proven sequence)
+# 3. fresh vfat, copy the whole extracted tree back (mtools, no whitelist)
 rm -f "$WORK/boot-vfat.img"
-mkfs.vfat -F 32 -n BOOT -C "$WORK/boot-vfat.img" 262144   # 256 MiB in 1KB blocks
-for D in Devices Experimental Image Panels Backup-stock; do mmd -i "$WORK/boot-vfat.img" "::$D"; done
-mcopy -o -s -i "$WORK/boot-vfat.img" "$WORK/boot-orig/Devices/"* ::/Devices/
-for D in Experimental Panels Backup-stock; do mcopy -o -s -i "$WORK/boot-vfat.img" "$WORK/boot-orig/$D/"* "::/$D/"; done
-if ls "$WORK/boot-orig/Image/"* >/dev/null 2>&1; then mcopy -o -s -i "$WORK/boot-vfat.img" "$WORK/boot-orig/Image/"* ::/Image/; fi
-mcopy -o -i "$WORK/boot-vfat.img" "$WORK/boot-orig/"*.txt ::/
-for f in $TOP_FILES boot.ini boot.ini-android logo_kernel.bmp make-report.txt; do
-  [ -f "$WORK/boot-orig/$f" ] && mcopy -o -i "$WORK/boot-vfat.img" "$WORK/boot-orig/$f" ::/
-done
+mkfs.vfat -F 32 -n BOOT -C "$WORK/boot-vfat.img" 262144   # 256 MiB
+mcopy -o -s -i "$WORK/boot-vfat.img" "$WORK/boot-orig/"* ::/
 mdir -i "$WORK/boot-vfat.img" ::/ >/dev/null || die "fresh vfat verification failed"
 
 # 4. splice the fresh vfat into the image at p1
