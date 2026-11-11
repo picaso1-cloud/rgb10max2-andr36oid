@@ -114,9 +114,23 @@ for f in $TOP_FILES; do cp "$PROFILE_DIR/$f" "$WORK/boot-orig/Devices/RGB10MAX2/
 cp "$WORK/boot-orig/boot.ini" "$WORK/boot-orig/Devices/RGB10MAX2/boot.ini"
 grep -q "^Devices/RGB10MAX2|" "$WORK/boot-orig/andr36oid-profiles.txt" 2>/dev/null || \
   printf 'Devices/RGB10MAX2|RGB10 Max 2|Powkiddy RGB10 Max 2|\n' >> "$WORK/boot-orig/andr36oid-profiles.txt"
-grep -q "sf_orientation=ORIENTATION_270" "$WORK/boot-orig/boot.ini" || \
-  sed -i 's/setenv bootargs /setenv bootargs androidboot.sf_orientation=ORIENTATION_270 usbcore.autosuspend=-1 /' "$WORK/boot-orig/boot.ini"
-grep -q "ORIENTATION_270" "$WORK/boot-orig/boot.ini" || die "boot.ini orientation edit failed"
+BLE="$WORK/boot-orig/boot.ini"
+# 1) usbcore.autosuspend=-1 in bootrootfs (normal and low-RAM branches)
+if ! grep -q "usbcore.autosuspend=-1" "$BLE"; then
+  sed -i 's|^setenv bootrootfs "\(.*\)"$|setenv bootrootfs "\1 usbcore.autosuspend=-1"|' "$BLE"
+  sed -i 's|^        setenv bootrootfs "cma=64M \${bootrootfs}"$|        setenv bootrootfs "cma=64M ${bootrootfs} usbcore.autosuspend=-1"|' "$BLE"
+fi
+# 2) screen orientation on the android variable (as on the proven card)
+if ! grep -q "androidboot.sf_orientation=ORIENTATION_270" "$BLE"; then
+  sed -i 's|^setenv android "\(.*\)"$|setenv android "\1 androidboot.sf_orientation=ORIENTATION_270"|' "$BLE"
+fi
+# 3) pre-kernel PMIC OTG rail poke before the first booti
+if ! grep -q "i2c mw 0x20 0xb4 0x47 1" "$BLE"; then
+  awk 'BEGIN{done=0} /^    booti / && !done {print "        i2c dev 0"; print "        i2c mw 0x20 0xb4 0x47 1"; done=1} {print}' "$BLE" > "$BLE.tmp"
+  mv "$BLE.tmp" "$BLE"
+fi
+grep -q "ORIENTATION_270" "$BLE" || die "boot.ini orientation edit failed"
+grep -q "usbcore.autosuspend=-1" "$BLE" || die "boot.ini autosuspend edit failed"
 
 # 3. fresh vfat, copy the whole extracted tree back (mtools, no whitelist)
 rm -f "$WORK/boot-vfat.img"
