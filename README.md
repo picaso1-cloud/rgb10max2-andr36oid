@@ -38,12 +38,17 @@ ports share one 5 V net, and the Wi-Fi hub is powered from the rk817 OTG latch.
    The script patches only the `BOOT` and `vendor` partitions and verifies the
    result inside the image. It writes a `.sha256` next to the output.
 
-2. **Flash the card** with our flasher (Linux/macOS; Windows experimental):
+2. **Decompress** the release image (`.img.xz`), then **flash the card** with our
+   flasher (Linux/macOS; Windows experimental):
 
    ```sh
+   xz -d RGB10MAX2-andr36oid.img.xz
    cd flasher && ./build.sh          # or use the prebuilt binaries in dist/
    sudo ./dist/rgb10max2-flasher-linux-amd64 flash ../RGB10MAX2-andr36oid.img
    ```
+
+   The release also ships a `.sha256` for the archive; the flasher checks
+   `IMAGE.sha256` automatically when it sits next to the image.
 
    The flasher lists removable cards, asks for confirmation, writes the image and
    then **reads the card back and compares SHA-256** — cheap cards that corrupt
