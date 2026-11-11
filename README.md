@@ -83,6 +83,24 @@ docs/                  hardware and port notes 01–11
 - **vendor**: `diag.sh` + `zz-diag.rc` preload `rtl8xxxu.ko`, pin USB runtime PM,
   and provide the root command daemon; `debug.sf.nobootanimation=1`.
 
+## Privacy — what the image does and does not contain
+
+The builder patches **only** two partitions of the official base image:
+
+- `BOOT` (p1): profile files + `boot.ini` lines
+- `vendor` (p8): `diag.sh`, `zz-diag.rc`, `rk817tool`, `wifitool`, one build.prop line
+
+It never mounts or modifies `/data`. Therefore the produced image contains:
+
+- ❌ no Tailscale authentication state (`/data/local/tmp/ts/state/…`)
+- ❌ no Wi-Fi credentials or saved networks
+- ❌ no apps, accounts, saves or any other per-install data
+- ❌ no personal IP addresses, hostnames or keys (this repository was scrubbed before publication)
+
+Tailscale is optional and installed by the user after first boot; its login state
+stays on that console's `/data`. `scripts/migrate-console-state.sh` only runs when
+you explicitly invoke it with your own state kit, and no state kit is published here.
+
 ## License and credits
 
 - Port code, scripts and documentation: **GPL-3.0** (see [`LICENSE`](LICENSE)).
