@@ -98,6 +98,9 @@ MIDX="$IMG@@$OFF1"
 # 1. pull the entire official BOOT content out (mtools = no kernel involvement)
 mcopy -o -s -i "$MIDX" ::/ "$WORK/boot-orig"/ || die "mtools read of official BOOT failed"
 [ -f "$WORK/boot-orig/boot.ini" ] || die "official BOOT extraction incomplete"
+# The p1 mount must go away before we splice a new filesystem over it,
+# otherwise the unmount flushes stale FAT metadata into the new image.
+umount "$WORK/boot" || die "BOOT unmount failed — aborting before splice"
 
 # 2. apply our changes on the local copy
 mkdir -p "$WORK/boot-orig/Backup-stock"
@@ -117,7 +120,7 @@ grep -q "ORIENTATION_270" "$WORK/boot-orig/boot.ini" || die "boot.ini orientatio
 
 # 3. fresh vfat, everything copied back in with mtools (proven sequence)
 rm -f "$WORK/boot-vfat.img"
-mkfs.vfat -n BOOT -C "$WORK/boot-vfat.img" 262144   # 256 MiB in 1KB blocks
+mkfs.vfat -F 32 -n BOOT -C "$WORK/boot-vfat.img" 262144   # 256 MiB in 1KB blocks
 for D in Devices Experimental Image Panels Backup-stock; do mmd -i "$WORK/boot-vfat.img" "::$D"; done
 mcopy -o -s -i "$WORK/boot-vfat.img" "$WORK/boot-orig/Devices/"* ::/Devices/
 for D in Experimental Panels Backup-stock; do mcopy -o -s -i "$WORK/boot-vfat.img" "$WORK/boot-orig/$D/"* "::/$D/"; done
@@ -147,8 +150,7 @@ grep -q "nobootanimation" "$WORK/vendor/build.prop" && \
 grep -q "debug.sf.nobootanimation=1" "$WORK/vendor/build.prop" || die "build.prop knob failed"
 echo "vendor: diag.sh + tools + build.prop installed."
 
-sync -f "$WORK/boot" 2>/dev/null || sync
-umount "$WORK/boot" || die "BOOT unmount failed (busy) — aborting instead of losing writes"
+# BOOT was unmounted before the splice; nothing to flush
 sync -f "$WORK/vendor" 2>/dev/null || sync
 umount "$WORK/vendor" || die "vendor unmount failed (busy) — aborting instead of losing writes"
 losetup -d "$VLO" 2>/dev/null || true
